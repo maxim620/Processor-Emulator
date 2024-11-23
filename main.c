@@ -5,6 +5,7 @@
 #define RAM_SIZE 65536
 #define INSTRUCTION_HALT 0x00
 #define INSTRUCTION_PRINT 0x01
+#define INSTRUCTION_PRINT_ERROR 0x02
 
 typedef struct {
     uint8_t memory[RAM_SIZE];
@@ -49,6 +50,9 @@ int executeInstruction(Processor *cpu) {
             
         case INSTRUCTION_PRINT:
             printf("hi\n");
+            break;
+        case INSTRUCTION_PRINT_ERROR:
+            printf("Error\n");
             break;
             
         default:
