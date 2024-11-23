@@ -6,6 +6,7 @@
 #define INSTRUCTION_HALT 0x00
 #define INSTRUCTION_PRINT 0x01
 #define INSTRUCTION_PRINT_ERROR 0x02
+#define INSTRUCTION_INCREMENT 0x03
 
 typedef struct {
     uint8_t memory[RAM_SIZE];
@@ -50,10 +51,21 @@ int executeInstruction(Processor *cpu) {
             
         case INSTRUCTION_PRINT:
             printf("hi\n");
+            cpu->program_counter++;
             break;
         case INSTRUCTION_PRINT_ERROR:
             printf("Error\n");
+            cpu->program_counter++;
             break;
+            
+        case INSTRUCTION_INCREMENT: {
+            cpu->program_counter++;
+            uint8_t address = cpu->memory[cpu->program_counter];
+            cpu->memory[address]++;
+            printf("Memory[%d] increased to %d\n", address, cpu->memory[address]);
+            cpu->program_counter++;
+            break;
+        }
             
         default:
             printf("Unknown instruction: 0x%02X at position %d\n", 
@@ -61,7 +73,6 @@ int executeInstruction(Processor *cpu) {
             return 0;
     }
     
-    cpu->program_counter++;
     return 1;
 }
 
