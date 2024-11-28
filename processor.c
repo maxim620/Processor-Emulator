@@ -1,4 +1,5 @@
 #include "processor.h"
+#include "instruction_handlers.h"
 
 void initProcessor(Processor *cpu)
 {
@@ -36,132 +37,36 @@ int executeInstruction(Processor *cpu)
 
     switch (instruction)
     {
-    case HALT:
-        printf("Execution terminated.\n");
-        return 0;
-    case MOV:
-    {
-        cpu->program_counter++;
-        uint16_t dest_address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t src_address = cpu->memory[cpu->program_counter];
-        cpu->memory[dest_address] = cpu->memory[src_address];
-        cpu->program_counter++;
-        break;
-    }
-    case MOVI:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t value = cpu->memory[cpu->program_counter];
-        cpu->memory[address] = value;
-        cpu->program_counter++;
-        break;
-    }
-    case INC:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->memory[address]++;
-        cpu->program_counter++;
-        break;
-    }
-    case ADD:
-    {
-        cpu->program_counter++;
-        uint16_t address1 = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t address2 = cpu->memory[cpu->program_counter];
-        cpu->memory[address1] += cpu->memory[address2];
-        cpu->program_counter++;
-        break;
-    }
-    case ADDI:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t value = cpu->memory[cpu->program_counter];
-        cpu->memory[address] += value;
-        cpu->program_counter++;
-        break;
-    }
-    case SUB:
-    {
-        cpu->program_counter++;
-        uint16_t address1 = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t address2 = cpu->memory[cpu->program_counter];
-        cpu->memory[address1] -= cpu->memory[address2];
-        cpu->program_counter++;
-        break;
-    }
-    case SUBI:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t value = cpu->memory[cpu->program_counter];
-        cpu->memory[address] -= value;
-        cpu->program_counter++;
-        break;
-    }
-    case MUL:
-    {
-        cpu->program_counter++;
-        uint16_t address1 = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t address2 = cpu->memory[cpu->program_counter];
-        cpu->memory[address1] *= cpu->memory[address2];
-        cpu->program_counter++;
-        break;
-    }
-    case MULI:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t value = cpu->memory[cpu->program_counter];
-        cpu->memory[address] *= value;
-        cpu->program_counter++;
-        break;
-    }
-    case DIV:
-    {
-        cpu->program_counter++;
-        uint16_t address1 = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t address2 = cpu->memory[cpu->program_counter];
-        cpu->memory[address1] /= cpu->memory[address2];
-        cpu->program_counter++;
-        break;
-    }
-    case DIVI:
-    {
-        cpu->program_counter++;
-        uint16_t address = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t value = cpu->memory[cpu->program_counter];
-        cpu->memory[address] /= value;
-        cpu->program_counter++;
-        break;
-    }
-    case XCHG:
-    {
-        cpu->program_counter++;
-        uint16_t address1 = cpu->memory[cpu->program_counter];
-        cpu->program_counter++;
-        uint16_t address2 = cpu->memory[cpu->program_counter];
-        cpu->memory[address1] = cpu->memory[address2];
-        cpu->program_counter++;
-        break;
-    }
-
-    default:
-        printf("Unknown instruction: 0x%04X at position %d\n",
-               instruction, cpu->program_counter);
-        return 0;
+        case HALT: return handle_halt(cpu);
+        case MOV:  return handle_mov(cpu);
+        case MOVI: return handle_movi(cpu);
+        case INC:  return handle_inc(cpu);
+        case ADD:  return handle_add(cpu);
+        case ADDI: return handle_addi(cpu);
+        case SUB:  return handle_sub(cpu);
+        case SUBI: return handle_subi(cpu);
+        case MUL:  return handle_mul(cpu);
+        case MULI: return handle_muli(cpu);
+        case DIV:  return handle_div(cpu);
+        case DIVI: return handle_divi(cpu);
+        case XCHG: return handle_xchg(cpu);
+        case AND:  return handle_and(cpu);
+        case ANDI: return handle_andi(cpu);
+        case OR:   return handle_or(cpu);
+        case ORI:  return handle_ori(cpu);
+        case XOR:  return handle_xor(cpu);
+        case XORI: return handle_xori(cpu);
+        case NOT:  return handle_not(cpu);
+        case NEG:  return handle_neg(cpu);
+        case JMP:  return handle_jmp(cpu);
+        case NOP:  return handle_nop(cpu);
+        case CMP:  return handle_cmp(cpu);
+        case CMPI: return handle_cmpi(cpu);
+        
+        default:
+            printf("Unknown instruction: 0x%04X at position %d\n",
+                   instruction, cpu->program_counter);
+            return 0;
     }
 
     return 1;
