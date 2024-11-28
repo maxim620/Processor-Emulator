@@ -1,92 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include "processor.h"
 
-#define RAM_SIZE 65536
-#define INSTRUCTION_HALT 0x00
-#define INSTRUCTION_PRINT 0x01
-#define INSTRUCTION_PRINT_ERROR 0x02
-#define INSTRUCTION_INCREMENT 0x03
-
-typedef struct {
-    uint8_t memory[RAM_SIZE];
-    uint16_t program_counter;
-} Processor;
-
-// Инициализация процессора
-void initProcessor(Processor *cpu) {
-    for (int i = 0; i < RAM_SIZE; i++) {
-        cpu->memory[i] = 0;
-    }
-    cpu->program_counter = 0;
-}
-
-// Загрузка программы в память
-int loadProgram(Processor *cpu, const char *filename) {
-    FILE *file = fopen(filename, "rb");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 0;
-    }
-
-    size_t bytes_read = fread(cpu->memory, 1, RAM_SIZE, file);
-    fclose(file);
-    
-    if (bytes_read == 0) {
-        printf("Error: Empty file or read error\n");
-        return 0;
-    }
-    
-    return 1;
-}
-
-// Выполнение одной инструкции
-int executeInstruction(Processor *cpu) {
-    uint8_t instruction = cpu->memory[cpu->program_counter];
-    
-    switch (instruction) {
-        case INSTRUCTION_HALT:
-            printf("Execution terminated.\n");
-            return 0;
-            
-        case INSTRUCTION_PRINT:
-            printf("hi\n");
-            cpu->program_counter++;
-            break;
-        case INSTRUCTION_PRINT_ERROR:
-            printf("Error\n");
-            cpu->program_counter++;
-            break;
-            
-        case INSTRUCTION_INCREMENT: {
-            cpu->program_counter++;
-            uint8_t address = cpu->memory[cpu->program_counter];
-            cpu->memory[address]++;
-            printf("Memory[%d] increased to %d\n", address, cpu->memory[address]);
-            cpu->program_counter++;
-            break;
-        }
-            
-        default:
-            printf("Unknown instruction: 0x%02X at position %d\n", 
-                   instruction, cpu->program_counter);
-            return 0;
-    }
-    
-    return 1;
-}
-
-// Основной цикл выполнения
-void runProcessor(Processor *cpu) {
-    while (cpu->program_counter < RAM_SIZE) {
-        if (!executeInstruction(cpu)) {
-            break;
-        }
-    }
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
         printf("Usage: %s <file_path>\n", argv[0]);
         return 1;
     }
@@ -94,12 +11,34 @@ int main(int argc, char *argv[]) {
     Processor cpu;
     initProcessor(&cpu);
 
-    if (!loadProgram(&cpu, argv[1])) {
+    if (!loadProgram(&cpu, argv[1]))
+    {
         return 1;
     }
 
     runProcessor(&cpu);
-    getchar();
     
+    // Вывод заголовка таблицы
+    //printf("\n       ");
+    //for (int i = 0; i < 16; i++) {
+    //    printf("   %X  ", i);
+    //}
+    //printf("\n       ");
+    //for (int i = 0; i < 16; i++) {
+    //    printf("------");
+    //}
+    //printf("\n");
+
+    // Вывод содержимого RAM в виде таблицы 32x16
+    //for (int row = 0; row < 32; row++) {
+    //    printf("0x%04X |", row * 16);
+    //    for (int col = 0; col < 16; col++) {
+    //        int index = row * 16 + col;
+    //        printf(" %04X ", cpu.memory[index]);
+    //    }
+    //    printf("\n");
+    //}
+
+    getchar();
     return 0;
 }
